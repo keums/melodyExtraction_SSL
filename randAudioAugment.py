@@ -13,7 +13,6 @@ import librosa
 from madmom.audio.signal import *
 from pysndfx import AudioEffectsChain
 
-
 def randAudioAugment():
     fx = (AudioEffectsChain())
     effect = [random.randint(0, 1) for i in range(6)]
@@ -49,7 +48,7 @@ def randAudioAugment():
     return fx
 
 
-def spec_extraction(file_name, file_path):
+def save_STFT(file_name, file_path):
     # y, sr = librosa.load(file_name, sr=8000)
     y = Signal(file_path, sample_rate=8000, dtype=np.float32, num_channels=1)
     S = librosa.core.stft(y, n_fft=1024, hop_length=80*1, win_length=1024)
@@ -62,7 +61,7 @@ def spec_extraction(file_name, file_path):
     np.save(PATH_spec + file_name, x_spec)
 
 
-def spec_extraction(file_name, file_path):
+def save_STFT_RAA(file_name, file_path):
     fx = randAudioAugment()
     y = Signal(file_path, sample_rate=8000, dtype=np.float32, num_channels=1)
     y_raa = fx(y)
