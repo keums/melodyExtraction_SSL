@@ -45,9 +45,9 @@ def ResNet_Block(input, block_id, filterNum):
 
 
 
-def melody_ResNet(options):
-    num_output = int(55 * 2 ** (math.log(options.note_res, 2)) + 2)
-    input = Input(shape=(options.input_size, options.num_spec, 1))
+def melody_ResNet():
+    num_output = int(55 * 2 ** (math.log(8, 2)) + 2)
+    input = Input(shape=(31, 513, 1))
 
     block_1 = ResNet_Block(input=input, block_id=1,
                              filterNum=64)
@@ -60,7 +60,7 @@ def melody_ResNet(options):
     block_4 = Dropout(0.5)(block_4)
 
     numOutput_P = block_4._keras_shape[2] * block_4._keras_shape[3]
-    output = Reshape((options.input_size, numOutput_P))(block_4)
+    output = Reshape((31, numOutput_P))(block_4)
     output = Bidirectional(
         LSTM(256, return_sequences=True, recurrent_dropout=0.3, dropout=0.3))(output)
     output = TimeDistributed(Dense(num_output))(output)
