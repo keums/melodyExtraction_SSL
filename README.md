@@ -1,5 +1,5 @@
 # Semi-supervised learning using teacher-student models for vocal melody extraction
-The source code of *"Semi-supervised learning using teacher-student models for vocal melody extraction"*, ISMIR(2020), |<a href = "https://arxiv.org/abs/2008.06358" target="_blank">PDF</a>|
+The source code of *"Semi-supervised learning using teacher-student models for vocal melody extraction"*, ISMIR(2020) |<a href = "https://arxiv.org/abs/2008.06358" target="_blank">PDF</a>|
 
 ## Abstract
 
