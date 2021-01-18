@@ -2,11 +2,6 @@ import torch
 import torch.nn as nn
 import math
 
-from torch.nn import Module
-from torch.nn.parameter import Parameter
-from torch.nn.utils.rnn import PackedSequence
-import torch.nn.functional as F
-
 
 class ConvNorm(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size):
@@ -58,7 +53,10 @@ class Melody_ResNet(nn.Module):
             ResNet_Block(192, 256),
         )
 
-        self.lstm = nn.LSTM(512, 256, bidirectional=True, batch_first=True)
+        # Keras uses a hard_sigmoid for default activation, but the test showed that using a plain sigmoid in PyTorch 
+        # showed the most similar result with the pre-trained Keras Model
+        # Also, PyTorch LSTM does not provides recurernt_dropout.
+        self.lstm = nn.LSTM(512, 256, bidirectional=True, batch_first=True,  dropout=0.3)
         num_output = int(55 * 2 ** (math.log(8, 2)) + 2)
         self.final = nn.Linear(512,num_output)
 
