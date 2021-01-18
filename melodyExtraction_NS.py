@@ -7,12 +7,13 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import glob
+import torch
 
 from model import *
 from featureExtraction import *
+from model_torch import Melody_ResNet as TorchModel
 
-
-def melodyExtraction_NS(file_name, output_path, gpu_index):
+def melodyExtraction_NS(file_name, output_path, gpu_index, run_on_torch):
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     if gpu_index is None:
         os.environ['CUDA_VISIBLE_DEVICES'] = ''
@@ -26,12 +27,28 @@ def melodyExtraction_NS(file_name, output_path, gpu_index):
     '''  Features extraction'''
     X_test, X_spec = spec_extraction(
         file_name=file_name, win_size=31)
-
+    
     '''  melody predict'''
+
+    if run_on_torch:
+        model = TorchModel()
+        model.load_state_dict(torch.load('./weights/torch_weights.pt'))
+        torch_input = torch.Tensor(X_test).permute(0,3,1,2)
+        if gpu_index is not None:
+            model = model.to('cuda')
+            torch_input = torch_input.to('cuda')
+        model.eval()
+        with torch.no_grad():
+            y_predict = model(torch_input)
+            y_predict = y_predict.cpu().numpy()
+    else:            
+        model = melody_ResNet()
+        model.load_weights('./weights/ResNet_NS.hdf5')
+        y_predict = model.predict(X_test, batch_size=64, verbose=1)
+
     model = melody_ResNet()
     model.load_weights('./weights/ResNet_NS.hdf5')
     y_predict = model.predict(X_test, batch_size=64, verbose=1)
-
     y_shape = y_predict.shape
     num_total_frame = y_shape[0]*y_shape[1]
     est_pitch = np.zeros(num_total_frame)
@@ -63,18 +80,20 @@ def parser():
     p = argparse.ArgumentParser()
     p.add_argument('-p', '--filepath',
                    help='Path to input audio (default: %(default)s',
-                   type=str, default='test_audio_file.mp4')
+                   type=str, default='audio/test_audio.mp4')
     p.add_argument('-o', '--output_dir',
                    help='Path to output folder (default: %(default)s',
                    type=str, default='./results/')
     p.add_argument('-gpu', '--gpu_index',
                    help='Assign a gpu index for processing. It will run with cpu if None.  (default: %(default)s',
                    type=int, default=None)
+    p.add_argument('-torch', '--run_on_torch',
+                   help='Run on PyTorch instead of Keras', default=False, action='store_true')
     return p.parse_args()
 
 
 if __name__ == '__main__':
     args = parser()
     melodyExtraction_NS(file_name=args.filepath,
-                        output_path=args.output_dir, gpu_index=args.gpu_index)
+                        output_path=args.output_dir, gpu_index=args.gpu_index, run_on_torch=args.run_on_torch)
 
