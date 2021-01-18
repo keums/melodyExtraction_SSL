@@ -32,8 +32,8 @@ def melodyExtraction_NS(file_name, output_path, gpu_index, run_on_torch):
         import torch 
         from model_torch import Melody_ResNet as TorchModel
         model = TorchModel()
-        torch_input = torch.Tensor(X_test).permute(0,3,1,2)
         model.load_state_dict(torch.load('./weights/torch_weights.pt'))
+        torch_input = torch.Tensor(X_test).permute(0,3,1,2)
         if gpu_index is not None:
             model = model.to('cuda')
             torch_input = torch_input.to('cuda')
