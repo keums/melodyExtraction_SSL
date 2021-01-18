@@ -8,10 +8,8 @@ import sys
 import matplotlib.pyplot as plt
 import glob
 import torch
-
-from model import *
 from featureExtraction import *
-from model_torch import Melody_ResNet as TorchModel
+
 
 def melodyExtraction_NS(file_name, output_path, gpu_index, run_on_torch):
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -31,9 +29,11 @@ def melodyExtraction_NS(file_name, output_path, gpu_index, run_on_torch):
     '''  melody predict'''
 
     if run_on_torch:
+        import torch 
+        from model_torch import Melody_ResNet as TorchModel
         model = TorchModel()
-        model.load_state_dict(torch.load('./weights/torch_weights.pt'))
         torch_input = torch.Tensor(X_test).permute(0,3,1,2)
+        model.load_state_dict(torch.load('./weights/torch_weights.pt'))
         if gpu_index is not None:
             model = model.to('cuda')
             torch_input = torch_input.to('cuda')
@@ -41,14 +41,12 @@ def melodyExtraction_NS(file_name, output_path, gpu_index, run_on_torch):
         with torch.no_grad():
             y_predict = model(torch_input)
             y_predict = y_predict.cpu().numpy()
-    else:            
+    else:
+        from model import melody_ResNet
         model = melody_ResNet()
         model.load_weights('./weights/ResNet_NS.hdf5')
         y_predict = model.predict(X_test, batch_size=64, verbose=1)
 
-    model = melody_ResNet()
-    model.load_weights('./weights/ResNet_NS.hdf5')
-    y_predict = model.predict(X_test, batch_size=64, verbose=1)
     y_shape = y_predict.shape
     num_total_frame = y_shape[0]*y_shape[1]
     est_pitch = np.zeros(num_total_frame)
