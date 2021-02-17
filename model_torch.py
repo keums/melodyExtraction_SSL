@@ -59,13 +59,17 @@ class Melody_ResNet(nn.Module):
         self.lstm = nn.LSTM(512, 256, bidirectional=True, batch_first=True,  dropout=0.3)
         num_output = int(55 * 2 ** (math.log(8, 2)) + 2)
         self.final = nn.Linear(512,num_output)
+        self.batch_size = 300
 
     def forward(self, input):
-        block = self.block(input) # channel first for torch
-        numOutput_P = block.shape[1] * block.shape[3]
-        reshape_out = block.permute(0,2,3,1).reshape(block.shape[0], 31, numOutput_P)
+        total_output = []
+        for i in range(math.ceil(input.shape[0]/self.batch_size)):
+            block = self.block(input[i*self.batch_size:(i+1)*self.batch_size]) # channel first for torch
+            numOutput_P = block.shape[1] * block.shape[3]
+            reshape_out = block.permute(0,2,3,1).reshape(block.shape[0], 31, numOutput_P)
 
-        lstm_out, _ = self.lstm(reshape_out)
-        out = self.final(lstm_out)
-        out = torch.softmax(out, dim=-1)
-        return out
+            lstm_out, _ = self.lstm(reshape_out)
+            out = self.final(lstm_out)
+            out = torch.softmax(out, dim=-1)
+            total_output.append(out)
+        return torch.cat(total_output)
