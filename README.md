@@ -66,6 +66,6 @@ If you find our work useful, please consider citing our paper.
   title={Semi-supervised learning using teacher-student models for vocal melody extraction},
   author={Kum, Sangeun and Lin, Jing-Hua and Su, Li and Nam, Juhan},
   booktitle={Proc. International Society of Music Information Retrieval Conference (ISMIR)},
-	year={2020}
+  year={2020}
 }
 ``` 
