@@ -61,10 +61,11 @@ $ python melodyExtraction_NS.py -p ./audio/test_audio_file.mp4 -o ./results/ -gp
 
 ## Citation
 If you find our work useful, please consider citing our paper.
+``` 
 @inproceedings{kum2020semi,
   title={Semi-supervised learning using teacher-student models for vocal melody extraction},
   author={Kum, Sangeun and Lin, Jing-Hua and Su, Li and Nam, Juhan},
   booktitle={Proc. International Society of Music Information Retrieval Conference (ISMIR)},
 	year={2020}
 }
-
+``` 
