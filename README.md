@@ -19,6 +19,7 @@ We also find that it is essential to ensure that the unlabeled audio has vocal p
 
 - Python Library 
   - Keras 2.3.0 (Deep Learning library)
+    - or PyTorch 1.7.0 if you use --run_on_torch option
   - Librosa 0.7.0 (for STFT)  
   - madmom 0.16.1 (for loading audio and resampling)
   - Numpy, SciPy
@@ -39,6 +40,7 @@ $ python melodyExtraction_NS.py -p ./audio/test_audio_file.mp4 -o ./results/ -gp
   -gpu gpu_index          Assign a gpu index for processing.
                           It will run with cpu if None. (default: None)
   -o output_dir           Path to output folder (default: ./results/)
+  -torch run_on_torch     Run on PyTorch instead of Keras. The output result can be slightly different.
 ```
 
 
